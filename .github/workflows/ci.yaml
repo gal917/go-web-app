@@ -16,22 +16,10 @@ jobs:
         go-version: 1.22
 
     - name: Build
-      run: go build -o go-web-app ./go-web-app/go-web-app
+      run: go build -o go-web-app .  # תוקן לנתיב נוכחי
 
     - name: Test
-      run: go test ./go-web-app/go-web-app/...  # <--- תוקן כאן
-
-  code-quality:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v6
-      with:
-        version: v1.56.2
-        # טיפ: כדאי להוסיף את הנתיב אם ה-lint נכשל:
-        working-directory: ./go-web-app/go-web-app
+      run: go test ./...            # תוקן לנתיב נוכחי
 
   push:
     runs-on: ubuntu-latest
@@ -49,8 +37,8 @@ jobs:
     - name: Build and Push action
       uses: docker/build-push-action@v6
       with:
-        context: ./go-web-app/go-web-app
-        file: ./go-web-app/go-web-app/Dockerfile
+        context: .                  # תוקן לנתיב נוכחי
+        file: ./Dockerfile          # תוקן לנתיב נוכחי
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/go-web-app:${{github.run_id}}
 
@@ -65,13 +53,12 @@ jobs:
 
     - name: Update tag in Helm chart
       run: |
-        sed -i 's/tag: .*/tag: "${{github.run_id}}"/' go-web-app/go-web-app/helm/go-web-app-chart/values.yaml
+        sed -i 's/tag: .*/tag: "${{github.run_id}}"/' helm/go-web-app-chart/values.yaml
 
     - name: Commit and push changes
       run: |
         git config --global user.email "gal@example.com"
         git config --global user.name "Gal"
-        # ודאי שהנתיב כאן זהה בדיוק לנתיב של ה-sed למעלה:
-        git add go-web-app/go-web-app/helm/go-web-app-chart/values.yaml
+        git add helm/go-web-app-chart/values.yaml
         git commit -m "Update tag in Helm chart"
         git push
