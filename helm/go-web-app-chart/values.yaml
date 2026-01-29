@@ -5,7 +5,7 @@ replicaCount: 1
 image: 
   repository: gal355/go-web-app
   pullPolicy: IfNotPresent
-  tag: "21498050475"
+  tag: "21498080438"
 
 ingress:
   enabled: false
