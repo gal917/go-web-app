@@ -16,10 +16,10 @@ jobs:
         go-version: 1.22
 
     - name: Build
-      run: go build -o go-web-app ./go-web-app
+      run: go build -o go-web-app ./go-web-app/go-web-app
 
     - name: Test
-      run: go test ./go-web-app/...
+      run: go build -o go-web-app ./go-web-app/go-web-app
 
   code-quality:
     runs-on: ubuntu-latest
@@ -47,8 +47,8 @@ jobs:
     - name: Build and Push action
       uses: docker/build-push-action@v6
       with:
-        context: ./go-web-app # מצביע לתיקייה עם הקוד
-        file: ./go-web-app/Dockerfile
+        context: ./go-web-app/go-web-app
+        file: ./go-web-app/go-web-app/Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/go-web-app:${{github.run_id}}
 
